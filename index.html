@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interest Rate Converter</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use Inter font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        /* Custom modal styles for displaying messages */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 90%;
+            width: 400px;
+            text-align: center;
+        }
+        .modal-content button {
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <!-- Main Container -->
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-4xl space-y-8 flex flex-col md:flex-row md:space-x-8">
+        <div class="md:w-1/2">
+            <!-- Header for the page -->
+            <div class="text-center mb-6">
+                <h1 class="text-3xl font-bold text-gray-800">Interest Rate Converter</h1>
+                <p class="text-gray-500 mt-2">Instantly convert between Nominal and Effective Rates.</p>
+            </div>
+
+            <!-- Central Compounding Periods Input -->
+            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 mb-8">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Conversion Parameters</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label for="compoundingPeriods" class="block text-sm font-medium text-gray-700 mb-1">Compounding Periods</label>
+                        <input type="number" id="compoundingPeriods" placeholder="e.g., 12 for monthly" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <p class="text-xs text-gray-500 mt-1">Common values: 1 (annually), 2 (semi-annually), 4 (quarterly), 12 (monthly), 365 (daily).</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nominal and Effective Rate Inputs -->
+            <div class="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4">
+                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 flex-1">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-700">Nominal Rate (%)</h2>
+                    <input type="number" id="nominalRate" placeholder="e.g., 31" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 flex-1">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-700">Effective Rate (%)</h2>
+                    <input type="number" id="effectiveRate" placeholder="e.g., 35.77" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+            </div>
+
+            <!-- Future Value Calculation -->
+            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 mt-8">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Calculate Future Value</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label for="principalAmount" class="block text-sm font-medium text-gray-700 mb-1">Principal Amount ($)</label>
+                        <input type="number" id="principalAmount" placeholder="e.g., 1000" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label for="timeHorizon" class="block text-sm font-medium text-gray-700 mb-1">Time Horizon (Years)</label>
+                        <input type="number" id="timeHorizon" placeholder="e.g., 5" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div id="futureValueResult" class="mt-4 text-center text-lg font-medium text-gray-800 hidden">
+                        Future Value: <span id="futureValue" class="font-bold"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Custom Modal for Alerts -->
+    <div id="alertModal" class="modal">
+        <div class="modal-content">
+            <h3 id="alertTitle" class="text-xl font-bold text-gray-800 mb-2"></h3>
+            <p id="alertMessage" class="text-gray-600"></p>
+            <button onclick="document.getElementById('alertModal').style.display='none'" class="bg-indigo-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-indigo-700 transition duration-300">
+                OK
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript logic -->
+    <script>
+        /**
+         * Custom function to display an alert message.
+         * @param {string} title - The title of the alert.
+         * @param {string} message - The message content.
+         */
+        function showAlert(title, message) {
+            document.getElementById('alertTitle').innerText = title;
+            document.getElementById('alertMessage').innerText = message;
+            document.getElementById('alertModal').style.display = 'flex';
+        }
+
+        // DOM elements
+        const nominalRateInput = document.getElementById('nominalRate');
+        const effectiveRateInput = document.getElementById('effectiveRate');
+        const compoundingPeriodsInput = document.getElementById('compoundingPeriods');
+        const principalAmountInput = document.getElementById('principalAmount');
+        const timeHorizonInput = document.getElementById('timeHorizon');
+        const futureValueResultDiv = document.getElementById('futureValueResult');
+        const futureValueSpan = document.getElementById('futureValue');
+
+        let currentEffectiveRate = 0;
+
+        /**
+         * A central function to calculate and update both rates.
+         * It checks which rate was last edited to determine the calculation direction.
+         * @param {string} lastChanged - A string indicating which input triggered the function ('nominal', 'effective', or 'compounding').
+         */
+        function updateRates(lastChanged) {
+            const nominalRate = parseFloat(nominalRateInput.value);
+            const effectiveRate = parseFloat(effectiveRateInput.value);
+            const compoundingPeriods = parseFloat(compoundingPeriodsInput.value);
+
+            // Hide results if compounding periods are invalid
+            if (isNaN(compoundingPeriods) || compoundingPeriods <= 0) {
+                nominalRateInput.value = "";
+                effectiveRateInput.value = "";
+                currentEffectiveRate = 0;
+                calculateFutureValue();
+                return;
+            }
+
+            // Determine which field to calculate based on which one was just changed.
+            if (lastChanged === 'nominal' && !isNaN(nominalRate) && nominalRate >= 0) {
+                const i = nominalRate / 100;
+                const newEffectiveRate = (Math.pow(1 + i / compoundingPeriods, compoundingPeriods) - 1) * 100;
+                effectiveRateInput.value = newEffectiveRate;
+                currentEffectiveRate = newEffectiveRate;
+            } else if (lastChanged === 'effective' && !isNaN(effectiveRate) && effectiveRate >= 0) {
+                const ear = effectiveRate / 100;
+                const newNominalRate = compoundingPeriods * (Math.pow(1 + ear, 1 / compoundingPeriods) - 1) * 100;
+                nominalRateInput.value = newNominalRate;
+                currentEffectiveRate = effectiveRate;
+            } else if (lastChanged === 'compounding' && !isNaN(nominalRate) && nominalRate >= 0) {
+                // If compounding periods change, recalculate effective rate based on existing nominal rate.
+                const i = nominalRate / 100;
+                const newEffectiveRate = (Math.pow(1 + i / compoundingPeriods, compoundingPeriods) - 1) * 100;
+                effectiveRateInput.value = newEffectiveRate;
+                currentEffectiveRate = newEffectiveRate;
+            } else if (lastChanged === 'compounding' && !isNaN(effectiveRate) && effectiveRate >= 0) {
+                // Or if compounding periods change, recalculate nominal rate based on existing effective rate.
+                const ear = effectiveRate / 100;
+                const newNominalRate = compoundingPeriods * (Math.pow(1 + ear, 1 / compoundingPeriods) - 1) * 100;
+                nominalRateInput.value = newNominalRate;
+                currentEffectiveRate = effectiveRate;
+            }
+            
+            // Trigger future value calculation after any rate update
+            calculateFutureValue();
+        }
+
+        /**
+         * Calculates and displays the Future Value based on the effective rate.
+         */
+        function calculateFutureValue() {
+            const principal = parseFloat(principalAmountInput.value);
+            const time = parseFloat(timeHorizonInput.value);
+            const rate = currentEffectiveRate / 100;
+            
+
+            if (isNaN(principal) || principal <= 0 || isNaN(time) || time < 0 || isNaN(rate) || rate === 0) {
+                futureValueResultDiv.classList.add('hidden');
+                return;
+            }
+
+            // Formula: FV = PV * (1 + EAR)^t
+            const futureValue = principal * Math.pow(1 + rate, time);
+            
+            futureValueSpan.textContent = '$' + futureValue;
+            futureValueResultDiv.classList.remove('hidden');
+        }
+
+        // Event listeners
+        nominalRateInput.addEventListener('input', () => updateRates('nominal'));
+        effectiveRateInput.addEventListener('input', () => updateRates('effective'));
+        compoundingPeriodsInput.addEventListener('input', () => updateRates('compounding'));
+        principalAmountInput.addEventListener('input', calculateFutureValue);
+        timeHorizonInput.addEventListener('input', calculateFutureValue);
+
+    </script>
+</body>
+</html>
