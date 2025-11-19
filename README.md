@@ -2,7 +2,7 @@
 
 An interactive web calculator to convert between nominal and effective interest rates and project future values.
 
-Live Demo: https://5j9.github.io/nominal-effective-rate-converter/
+Live Demo: https://5j9.github.io/interest-rate/
 
 Key Features:
 * Converts between nominal and effective interest rates in real time.
