@@ -4,6 +4,8 @@ A clean and simple web-based financial calculator designed to convert any given 
 
 This tool is built using pure HTML, CSS, and JavaScript.
 
+https://5j9.github.io/interest-rate/
+
 ✨ Features
 -
 * Bidirectional Conversion: Enter a rate into any field, and the calculator instantly updates all other equivalent rates.
