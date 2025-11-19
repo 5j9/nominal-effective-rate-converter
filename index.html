@@ -4,17 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interest Rate Converter</title>
+    <title>Universal Interest Rate Converter (Concise)</title>
     <style>
-        /* GLOBAL RESET FOR BOX MODEL */
+        /* BASE STYLES & TAILWIND EMULATION */
         *,
         *::before,
         *::after {
             box-sizing: border-box;
-            /* Crucial fix for layout consistency */
         }
 
-        /* BASE STYLES & TAILWIND EMULATION */
         body {
             font-family: sans-serif;
             background-color: #f3f4f6;
@@ -26,56 +24,17 @@
             margin: 0;
         }
 
-        /* Main Container: Increased max-width and improved responsiveness */
         .main-container {
             background-color: #fff;
             padding: 32px;
             border-radius: 16px;
             box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 1200px;
+            max-width: 750px;
+            /* Adjusted max-width for 3 columns */
             margin: 32px auto;
-            display: flex;
-            flex-direction: column;
-            gap: 32px;
         }
 
-        /* Wrapper for the two main columns */
-        .converter-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 32px;
-            width: 100%;
-        }
-
-        /* Calculator Sections: Equal width on medium/large screens */
-        .calculator-section {
-            padding: 24px;
-            border-radius: 12px;
-            border: 2px solid;
-            background-color: rgba(255, 255, 255, 0.5);
-            flex: 1 1 50%;
-            min-width: 300px;
-        }
-
-        .calculator-section.nominal-effective {
-            border-color: #a5b4fc;
-            background-color: #e0e7ff;
-        }
-
-        .calculator-section.monthly-annual {
-            border-color: #bbf7d0;
-            background-color: #dcfce7;
-        }
-
-        /* Responsive adjustments for the main sections */
-        @media (min-width: 768px) {
-            .converter-wrapper {
-                flex-direction: row;
-            }
-        }
-
-        /* Utility Styles (Remaining necessary CSS) */
         .text-center {
             text-align: center;
         }
@@ -132,10 +91,6 @@
             font-size: 0.875rem;
         }
 
-        .text-gray-300 {
-            color: #d1d5db;
-        }
-
         .w-full {
             width: 100%;
         }
@@ -163,7 +118,6 @@
             border-radius: 8px;
         }
 
-        /* Input Focus Fix: Ensure the ring is drawn *inside* the element's space */
         .focus\:outline-none:focus {
             outline: none;
         }
@@ -171,24 +125,11 @@
         .focus\:ring-2:focus {
             box-shadow: 0 0 0 2px var(--tw-ring-color);
             z-index: 10;
-            /* Optional: ensures focus ring is on top */
             position: relative;
         }
 
         .focus\:ring-indigo-500:focus {
             --tw-ring-color: #6366f1;
-        }
-
-        .focus\:ring-green-500:focus {
-            --tw-ring-color: #22c55e;
-        }
-
-        .text-xs {
-            font-size: 0.75rem;
-        }
-
-        .mt-1 {
-            margin-top: 4px;
         }
 
         .flex {
@@ -199,14 +140,6 @@
             flex-direction: column;
         }
 
-        .md\:flex-row {
-            flex-direction: row;
-        }
-
-        .md\:space-x-4> :not([hidden])~ :not([hidden]) {
-            margin-left: 16px;
-        }
-
         .flex-1 {
             flex: 1 1 0%;
         }
@@ -215,71 +148,78 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
-        .mt-8 {
-            margin-top: 32px;
+        /* 3-COLUMN GRID STYLES */
+        .grid-container {
+            display: grid;
+            /* 3 Columns: Period, Nominal, Effective Period */
+            grid-template-columns: 1fr minmax(0, 1.2fr) minmax(0, 1.2fr);
+            gap: 1px;
+            background-color: #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 24px;
         }
 
-        .hidden {
-            display: none;
-        }
-
-        .text-lg {
-            font-size: 1.125rem;
-        }
-
-        .bg-gray-50 {
-            background-color: #f9fafb;
-        }
-
-        .my-2 {
-            margin-top: 8px;
-            margin-bottom: 8px;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 100;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.4);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
+        .grid-header,
+        .grid-cell {
+            padding: 12px;
             background-color: #fff;
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            max-width: 90%;
-            width: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 0.875rem;
+        }
+
+        .grid-header {
+            background-color: #4f46e5;
+            color: white;
+            font-weight: 600;
+        }
+
+        .grid-row-label {
+            background-color: #e0e7ff;
+            color: #4f46e5;
+            font-weight: 600;
+            justify-content: flex-start;
+            padding-left: 20px;
+        }
+
+        .grid-cell input {
+            width: 100%;
+            text-align: right;
+            border: none;
+            padding: 8px;
+            background-color: transparent;
+            font-weight: 500;
+        }
+
+        .future-value-section {
+            display: flex;
+            gap: 24px;
+            align-items: flex-end;
+        }
+
+        .future-value-result {
+            flex: 1;
+            padding: 16px;
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
             text-align: center;
         }
 
-        .modal-content button {
-            margin-top: 16px;
-            background-color: #4f46e5;
-            color: #fff;
-            padding: 8px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: background-color 0.3s ease;
-            border: none;
+        .time-horizon-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .modal-content button:hover {
-            background-color: #4338ca;
-        }
-
-        .text-indigo-700 {
-            color: #4338ca;
-        }
-
-        .text-green-700 {
-            color: #15803d;
+        .time-horizon-group label {
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -287,334 +227,283 @@
 <body>
 
     <div class="main-container">
-        <div class="text-center mb-6" style="width: 100%;">
-            <h1 class="text-3xl font-bold text-gray-800">Interest Rate Converter</h1>
-            <p class="text-gray-500 mt-2">Financial calculation tools for interest rates.</p>
+        <div class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Universal Interest Rate Converter</h1>
+            <p class="text-gray-500 mt-2">Enter a value in any field to calculate all others.</p>
         </div>
 
-        <div class="converter-wrapper">
-            <div class="calculator-section nominal-effective">
-                <h2 class="text-2xl font-bold text-indigo-700 mb-4">1. Nominal ↔ Effective Converter</h2>
+        <div class="grid-container" id="rateMatrix">
+            <div class="grid-header" style="background-color: #6366f1;">Compounding Period</div>
+            <div class="grid-header">Stated Annual Rate (Nominal, %)</div>
+            <div class="grid-header">Effective Period Rate (Daily/Monthly/etc., %)</div>
 
-                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 mb-6">
-                    <h3 class="text-xl font-semibold mb-4 text-gray-700">Conversion Parameters</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <label for="compoundingPeriods"
-                                class="block text-sm font-medium text-gray-700 mb-1">Compounding Periods</label>
-                            <input type="number" id="compoundingPeriods" placeholder="e.g., 12 for monthly"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <p class="text-xs text-gray-500 mt-1">Common values: 1 (annually), 12 (monthly), 365
-                                (daily).</p>
-                        </div>
-                    </div>
+            <div class="grid-row-label">Daily</div>
+            <div class="grid-cell"><input type="number" id="nominal_Daily" data-periods="365"></div>
+            <div class="grid-cell"><input type="number" id="effective_period_Daily" data-periods="365"></div>
+
+            <div class="grid-row-label">Monthly</div>
+            <div class="grid-cell"><input type="number" id="nominal_Monthly" data-periods="12"></div>
+            <div class="grid-cell"><input type="number" id="effective_period_Monthly" data-periods="12"></div>
+
+            <div class="grid-row-label">Quarterly</div>
+            <div class="grid-cell"><input type="number" id="nominal_Quarterly" data-periods="4"></div>
+            <div class="grid-cell"><input type="number" id="effective_period_Quarterly" data-periods="4"></div>
+
+            <div class="grid-row-label">Annual</div>
+            <div class="grid-cell"><input type="number" id="nominal_Annual" data-periods="1"></div>
+            <div class="grid-cell"><input type="number" id="effective_period_Annual" data-periods="1"></div>
+
+        </div>
+
+        <h2 class="text-xl font-semibold text-gray-700 mb-4">Calculate Future Value (Based on Effective Annual Rate)
+        </h2>
+        <div class="future-value-section">
+            <div class="flex-1 space-y-4">
+                <div>
+                    <label for="principalAmount" class="block text-sm font-medium text-gray-700 mb-1">Principal
+                        Amount ($)</label>
+                    <input type="number" id="principalAmount" value="1000"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
-
-                <div class="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4 mb-6">
-                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 flex-1">
-                        <h3 class="text-xl font-semibold mb-4 text-gray-700">Nominal Rate (%)</h3>
-                        <input type="number" id="nominalRate" placeholder="e.g., 31"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 flex-1">
-                        <h3 class="text-xl font-semibold mb-4 text-gray-700">Effective Rate (%)</h3>
-                        <input type="number" id="effectiveRate" placeholder="e.g., 35.77"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    </div>
-                </div>
-
-                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
-                    <h3 class="text-xl font-semibold mb-4 text-gray-700">Calculate Future Value</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <label for="principalAmount" class="block text-sm font-medium text-gray-700 mb-1">Principal
-                                Amount ($)</label>
-                            <input type="number" id="principalAmount" placeholder="e.g., 1000"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        </div>
-                        <div>
-                            <label for="timeHorizon" class="block text-sm font-medium text-gray-700 mb-1">Time Horizon
-                                (Years)</label>
-                            <input type="number" id="timeHorizon" placeholder="e.g., 5"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        </div>
-                        <div id="futureValueResult" class="mt-4 text-center text-lg font-medium text-gray-800 hidden">
-                            Future Value: <span id="futureValue" class="font-bold"></span>
+                <div>
+                    <label for="timeHorizon" class="block text-sm font-medium text-gray-700 mb-1">Time Horizon</label>
+                    <div class="time-horizon-group">
+                        <input type="number" id="timeValue" value="1"
+                            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <div class="flex space-x-3 text-sm">
+                            <label>
+                                <input type="radio" name="timeUnit" value="days" class="mr-1" id="timeUnitDays">Days
+                            </label>
+                            <label>
+                                <input type="radio" name="timeUnit" value="months" class="mr-1"
+                                    id="timeUnitMonths">Months
+                            </label>
+                            <label>
+                                <input type="radio" name="timeUnit" value="years" class="mr-1" id="timeUnitYears"
+                                    checked>Years
+                            </label>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="calculator-section monthly-annual">
-                <h2 class="text-2xl font-bold text-green-700 mb-4">2. Monthly ↔ Annual Converter</h2>
-                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
-                    <p class="text-sm text-gray-500 mb-4">Enter one value (Monthly or Annual) to calculate the others
-                        (assuming 12 compounding periods).</p>
-                    <div class="space-y-4">
-                        <div>
-                            <label for="monthlyRate" class="block text-sm font-medium text-gray-700 mb-1">Monthly Rate
-                                (%)</label>
-                            <input type="number" id="monthlyRate" placeholder="e.g., 2.58"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-                        </div>
-                        <div>
-                            <label for="annualRate" class="block text-sm font-medium text-gray-700 mb-1">Annual Rate
-                                (%)</label>
-                            <input type="number" id="annualRate" placeholder="e.g., 31"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-                        </div>
-
-                        <div id="monthlyAnnualResult" class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                            <h3 class="font-semibold text-gray-700 mb-2">Calculated Rates (↔)</h3>
-                            <p class="text-sm text-gray-600 mb-1">Nominal Annual (Non-Compounded): <span
-                                    id="nominalAnnualResult" class="font-bold">--</span></p>
-                            <p class="text-sm text-gray-600 mb-1">Effective Annual (Compounded): <span
-                                    id="effectiveAnnualResult" class="font-bold">--</span></p>
-                            <hr class="my-2">
-                            <p class="text-sm text-gray-600 mb-1">Nominal Monthly (Non-Compounded): <span
-                                    id="nominalMonthlyResult" class="font-bold">--</span></p>
-                            <p class="text-sm text-gray-600">Effective Monthly (Compounded): <span
-                                    id="effectiveMonthlyResult" class="font-bold">--</span></p>
-                        </div>
-                    </div>
-                </div>
+            <div class="future-value-result">
+                <p class="text-sm font-medium text-gray-700">Future Value:</p>
+                <p class="text-3xl font-bold text-gray-800"><span id="futureValue">--</span></p>
             </div>
         </div>
 
-    </div>
-
-    <div id="alertModal" class="modal">
-        <div class="modal-content">
-            <h3 id="alertTitle" class="text-xl font-bold text-gray-800 mb-2"></h3>
-            <p id="alertMessage" class="text-gray-600"></p>
-            <button onclick="document.getElementById('alertModal').style.display='none'">
-                OK
-            </button>
-        </div>
-    </div>
-
-    <div style="position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%);">
-        <a href="https://github.com/5j9/nominal-effective-rate-converter/" target="_blank"
-            style="color: #666; text-decoration: none; font-size: 0.9em;">
-            Source on GitHub
-        </a>
     </div>
 
     <script>
-        /**
-         * Custom function to display an alert message.
-         * @param {string} title - The title of the alert.
-         * @param {string} message - The message content.
-         */
-        function showAlert(title, message) {
-            document.getElementById('alertTitle').innerText = title;
-            document.getElementById('alertMessage').innerText = message;
-            document.getElementById('alertModal').style.display = 'flex';
-        }
+        const MAPPING = {
+            'Daily': 365,
+            'Monthly': 12,
+            'Quarterly': 4,
+            'Annual': 1
+        };
+        const MATRIX_INPUTS = {};
+        const PERIOD_NAMES = ['Daily', 'Monthly', 'Quarterly', 'Annual'];
+        // All possible input types
+        const RATE_TYPES = ['nominal', 'effective_period'];
 
-        // DOM elements for existing functionality
-        const nominalRateInput = document.getElementById('nominalRate');
-        const effectiveRateInput = document.getElementById('effectiveRate');
-        const compoundingPeriodsInput = document.getElementById('compoundingPeriods');
         const principalAmountInput = document.getElementById('principalAmount');
-        const timeHorizonInput = document.getElementById('timeHorizon');
-        const futureValueResultDiv = document.getElementById('futureValueResult');
+        const timeValueInput = document.getElementById('timeValue');
+        const timeUnitInputs = document.querySelectorAll('input[name="timeUnit"]');
         const futureValueSpan = document.getElementById('futureValue');
 
-        // DOM elements for NEW functionality
-        const monthlyRateInput = document.getElementById('monthlyRate');
-        const annualRateInput = document.getElementById('annualRate');
-        const nominalAnnualResultSpan = document.getElementById('nominalAnnualResult');
-        const effectiveAnnualResultSpan = document.getElementById('effectiveAnnualResult');
-        const nominalMonthlyResultSpan = document.getElementById('nominalMonthlyResult');
-        const effectiveMonthlyResultSpan = document.getElementById('effectiveMonthlyResult');
+        let activeInputId = null; // Tracks the ID of the field last modified
 
-        const M_PERIODS = 12; // Constant for monthly compounding in the new section
+        // --- Initialization and Setup ---
 
-        let currentEffectiveRate = 0; // Used for the Future Value calculation
+        // 1. Map all inputs and attach event listeners
+        PERIOD_NAMES.forEach(period => {
+            RATE_TYPES.forEach(type => {
+                const id = `${type}_${period}`;
+                const element = document.getElementById(id);
+                if (element) {
+                    MATRIX_INPUTS[id] = element;
+                    element.addEventListener('input', (event) => {
+                        // Clear the content of all other fields before calculation
+                        clearAllButOne(id);
+                        activeInputId = id;
+                        updateAllRates(id);
+                    });
+                }
+            });
+        });
 
-        /**
-         * A central function to calculate and update both rates (Nominal/Effective).
-         * It checks which rate was last edited to determine the calculation direction.
-         * @param {string} lastChanged - A string indicating which input triggered the function ('nominal', 'effective', or 'compounding').
-         */
-        function updateRates(lastChanged) {
-            const nominalRate = parseFloat(nominalRateInput.value);
-            const effectiveRate = parseFloat(effectiveRateInput.value);
-            const compoundingPeriods = parseFloat(compoundingPeriodsInput.value);
+        // 2. Setup Future Value listeners
+        principalAmountInput.addEventListener('input', calculateFutureValue);
+        timeValueInput.addEventListener('input', calculateFutureValue);
+        timeUnitInputs.forEach(input => {
+            input.addEventListener('change', calculateFutureValue);
+        });
 
-            // Hide results if compounding periods are invalid
-            if (isNaN(compoundingPeriods) || compoundingPeriods <= 0) {
-                nominalRateInput.value = "";
-                effectiveRateInput.value = "";
-                currentEffectiveRate = 0;
-                calculateFutureValue();
-                return;
-            }
-
-            // Determine which field to calculate based on which one was just changed.
-            if (lastChanged === 'nominal' && !isNaN(nominalRate) && nominalRate >= 0) {
-                const i = nominalRate / 100;
-                // Nominal to Effective: EAR = (1 + i/m)^m - 1
-                const newEffectiveRate = (Math.pow(1 + i / compoundingPeriods, compoundingPeriods) - 1) * 100;
-                effectiveRateInput.value = newEffectiveRate.toFixed(4);
-                currentEffectiveRate = newEffectiveRate;
-            } else if (lastChanged === 'effective' && !isNaN(effectiveRate) && effectiveRate >= 0) {
-                const ear = effectiveRate / 100;
-                // Effective to Nominal: i = m * [(1 + EAR)^(1/m) - 1]
-                const newNominalRate = compoundingPeriods * (Math.pow(1 + ear, 1 / compoundingPeriods) - 1) * 100;
-                nominalRateInput.value = newNominalRate.toFixed(4);
-                currentEffectiveRate = effectiveRate;
-            } else if (lastChanged === 'compounding' && !isNaN(nominalRate) && nominalRate >= 0) {
-                // If compounding periods change, recalculate effective rate based on existing nominal rate.
-                const i = nominalRate / 100;
-                const newEffectiveRate = (Math.pow(1 + i / compoundingPeriods, compoundingPeriods) - 1) * 100;
-                effectiveRateInput.value = newEffectiveRate.toFixed(4);
-                currentEffectiveRate = newEffectiveRate;
-            } else if (lastChanged === 'compounding' && !isNaN(effectiveRate) && effectiveRate >= 0) {
-                // Or if compounding periods change, recalculate nominal rate based on existing effective rate.
-                const ear = effectiveRate / 100;
-                const newNominalRate = compoundingPeriods * (Math.pow(1 + ear, 1 / compoundingPeriods) - 1) * 100;
-                nominalRateInput.value = newNominalRate.toFixed(4);
-                currentEffectiveRate = effectiveRate;
-            }
-
-            // Trigger future value calculation after any rate update
-            calculateFutureValue();
-        }
+        // --- Core Conversion Functions ---
 
         /**
-         * Calculates and displays the Future Value based on the effective rate.
+         * Clears all fields in the matrix except the one being edited.
+         * @param {string} excludeId - The ID of the input field to keep.
          */
-        function calculateFutureValue() {
-            const principal = parseFloat(principalAmountInput.value);
-            const time = parseFloat(timeHorizonInput.value);
-            const rate = currentEffectiveRate / 100;
-
-
-            if (isNaN(principal) || principal <= 0 || isNaN(time) || time < 0 || isNaN(rate) || rate <= 0) {
-                futureValueResultDiv.classList.add('hidden');
-                return;
-            }
-
-            // Formula: FV = PV * (1 + EAR)^t
-            const futureValue = principal * Math.pow(1 + rate, time);
-
-            futureValueSpan.textContent = '$' + futureValue.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            futureValueResultDiv.classList.remove('hidden');
-        }
-
-        /**
-         * Converts between Monthly and Annual Rates, calculating both Compounded (Effective) and Non-Compounded (Nominal) results.
-         * @param {string} lastChanged - 'monthly' or 'annual'.
-         */
-        function updateMonthlyAnnualRates(lastChanged) {
-            const monthlyRate = parseFloat(monthlyRateInput.value);
-            const annualRate = parseFloat(annualRateInput.value);
-
-            // Reset results
-            nominalAnnualResultSpan.textContent = effectiveAnnualResultSpan.textContent = nominalMonthlyResultSpan.textContent = effectiveMonthlyResultSpan.textContent = "--";
-
-            // Check for negative input
-            if ((lastChanged === 'monthly' && monthlyRate < 0) || (lastChanged === 'annual' && annualRate < 0)) {
-                showAlert("Invalid Input", "Interest rates must be zero or positive.");
-                monthlyRateInput.value = "";
-                annualRateInput.value = "";
-                return;
-            }
-
-            // --- Conversion Logic ---
-            const m = M_PERIODS; // 12 months/periods
-
-            if (lastChanged === 'monthly' && !isNaN(monthlyRate)) {
-                // Monthly to Annual
-
-                // Effective Monthly Rate (in decimal form)
-                const effectiveMonthly = monthlyRate / 100;
-
-                // 1. Nominal Annual Rate (Non-Compounded)
-                // Formula: Nominal Annual = Monthly Rate * 12
-                const nominalAnnual = effectiveMonthly * m * 100;
-
-                // 2. Effective Annual Rate (Compounded)
-                // Formula: EAR = (1 + effectiveMonthly)^12 - 1
-                const effectiveAnnual = (Math.pow(1 + effectiveMonthly, m) - 1) * 100;
-
-                // 3. Effective Monthly Rate (Compounded)
-                const effectiveMonthlyValue = monthlyRate;
-
-                // 4. Nominal Monthly Rate (Non-Compounded)
-                // This is calculated from the Nominal Annual Rate
-                const nominalMonthlyCalc = nominalAnnual / m;
-
-
-                annualRateInput.value = nominalAnnual.toFixed(4); // Update the other input field with the Nominal Annual Rate
-                nominalAnnualResultSpan.textContent = nominalAnnual.toFixed(4) + "%";
-                effectiveAnnualResultSpan.textContent = effectiveAnnual.toFixed(4) + "%";
-                nominalMonthlyResultSpan.textContent = nominalMonthlyCalc.toFixed(4) + "%";
-                effectiveMonthlyResultSpan.textContent = effectiveMonthlyValue.toFixed(4) + "%"; // The input is the Effective Monthly rate
-
-
-            } else if (lastChanged === 'annual' && !isNaN(annualRate)) {
-                // Annual to Monthly
-
-                // Nominal Annual Rate (in decimal form) - treating the annual input as the nominal rate
-                const nominalAnnual = annualRate / 100;
-
-                // 1. Nominal Monthly Rate (Non-Compounded)
-                // Formula: Nominal Monthly = Nominal Annual / 12
-                const nominalMonthly = (nominalAnnual / m) * 100;
-
-                // 2. Effective Annual Rate (Compounded)
-                // Formula: EAR = (1 + Nominal Annual/12)^12 - 1
-                const effectiveAnnual = (Math.pow(1 + nominalAnnual / m, m) - 1) * 100;
-
-                // 3. Nominal Annual Rate (Non-Compounded) - this is the input value
-                const nominalAnnualValue = annualRate;
-
-                // 4. Effective Monthly Rate (Compounded)
-                // Formula: Effective Monthly = (1 + EAR)^(1/12) - 1 
-                const effectiveMonthly = (Math.pow(1 + effectiveAnnual / 100, 1 / m) - 1) * 100;
-
-                monthlyRateInput.value = nominalMonthly.toFixed(4); // Update the other input field with the Nominal Monthly Rate
-                nominalAnnualResultSpan.textContent = nominalAnnualValue.toFixed(4) + "%";
-                effectiveAnnualResultSpan.textContent = effectiveAnnual.toFixed(4) + "%";
-                nominalMonthlyResultSpan.textContent = nominalMonthly.toFixed(4) + "%";
-                effectiveMonthlyResultSpan.textContent = effectiveMonthly.toFixed(4) + "%";
-
-            } else {
-                // Clear the other field if the current one is cleared
-                if (lastChanged === 'monthly') {
-                    annualRateInput.value = "";
-                } else if (lastChanged === 'annual') {
-                    monthlyRateInput.value = "";
+        function clearAllButOne(excludeId) {
+            for (const id in MATRIX_INPUTS) {
+                if (id !== excludeId) {
+                    MATRIX_INPUTS[id].value = '';
                 }
             }
         }
 
+        /**
+         * Converts the single input rate into the Effective Annual Rate (EAR).
+         * @param {string} inputId - The ID of the field that was just edited.
+         * @returns {number | null} The Effective Annual Rate (EAR) as a decimal, or null if input is invalid.
+         */
+        function calculateEffectiveAnnualRate(inputId) {
+            const inputElement = MATRIX_INPUTS[inputId];
+            if (!inputElement) return null;
 
-        // Event listeners for existing functionality
-        nominalRateInput.addEventListener('input', () => updateRates('nominal'));
-        effectiveRateInput.addEventListener('input', () => updateRates('effective'));
-        compoundingPeriodsInput.addEventListener('input', () => updateRates('compounding'));
-        principalAmountInput.addEventListener('input', calculateFutureValue);
-        timeHorizonInput.addEventListener('input', calculateFutureValue);
+            const inputValue = parseFloat(inputElement.value);
+            if (isNaN(inputValue) || inputValue < 0) return null;
 
-        // Event listeners for NEW functionality
-        monthlyRateInput.addEventListener('input', () => {
-            if (monthlyRateInput.value !== "") {
-                annualRateInput.value = ""; // Clear other field when one is edited
+            const rate = inputValue / 100;
+            const parts = inputId.split('_');
+
+            // Determine the base type and period from the ID
+            let type = parts[0];
+            let period = parts[parts.length - 1];
+
+            // Handle the composite type name
+            if (parts[1] === 'period') type = 'effective_period';
+
+            const m = MAPPING[period]; // Compounding periods per year
+
+            if (type === 'effective_period') {
+                // The input is the Effective Rate for the compounding period (e.g., Monthly Rate).
+                // EAR = (1 + r_period)^m - 1
+                return Math.pow(1 + rate, m) - 1;
+            } else { // type === 'nominal' (Stated Annual Rate for Period m)
+                // The input is the Stated Annual Rate compounded m times.
+                // EAR = (1 + Nominal_Annual/m)^m - 1
+                return Math.pow(1 + rate / m, m) - 1;
             }
-            updateMonthlyAnnualRates('monthly');
-        });
+        }
 
-        annualRateInput.addEventListener('input', () => {
-            if (annualRateInput.value !== "") {
-                monthlyRateInput.value = ""; // Clear other field when one is edited
+
+        /**
+         * Updates all other fields in the matrix based on the calculated EAR.
+         * @param {number} earDecimal - The Effective Annual Rate as a decimal.
+         * @param {string} excludeId - The ID of the field to skip updating.
+         */
+        function updateMatrix(earDecimal, excludeId) {
+
+            // 1. Iterate through all targets and convert from EAR.
+            for (const id in MATRIX_INPUTS) {
+                if (id === excludeId) continue;
+
+                const parts = id.split('_');
+                let type = parts[0];
+                let period = parts[parts.length - 1];
+
+                // Handle the composite type name
+                if (parts[1] === 'period') type = 'effective_period';
+
+                const m = MAPPING[period];
+
+                let result; // The final rate value in percent
+
+                if (type === 'effective_period') {
+                    // Target: Effective Period Rate (r_period)
+                    // Formula: r_period = (1 + EAR)^(1/m) - 1
+                    result = (Math.pow(1 + earDecimal, 1 / m) - 1) * 100;
+
+                } else { // type === 'nominal' (Stated Annual Rate for Period m)
+                    // Target: Stated Annual Rate (Nominal_m)
+                    // Formula: Nominal_m = m * [(1 + EAR)^(1/m) - 1] 
+                    const effectivePeriodRate = Math.pow(1 + earDecimal, 1 / m) - 1;
+                    result = (effectivePeriodRate * m) * 100;
+                }
+
+                MATRIX_INPUTS[id].value = result.toFixed(6); // Use 6 decimal places for precision
             }
-            updateMonthlyAnnualRates('annual');
-        });
+        }
 
+        /**
+         * Main orchestration function.
+         * @param {string} inputId - The ID of the field that was just edited.
+         */
+        function updateAllRates(inputId) {
+            const ear = calculateEffectiveAnnualRate(inputId);
+
+            if (ear !== null) {
+                updateMatrix(ear, inputId);
+            } else {
+                // If the input is invalid (cleared or non-positive), clear the rest of the matrix
+                clearAllButOne(inputId);
+            }
+
+            // Recalculate Future Value regardless of rate validity (it handles null/zero rates)
+            calculateFutureValue();
+        }
+
+        // --- Future Value Calculation ---
+
+        function calculateFutureValue() {
+            const principal = parseFloat(principalAmountInput.value || 1000); // Default to 1000
+            const timeValue = parseFloat(timeValueInput.value || 1);
+            let timeUnit = 'years';
+
+            timeUnitInputs.forEach(input => {
+                if (input.checked) {
+                    timeUnit = input.value;
+                }
+            });
+
+            // Determine the active EAR from the last input field, or default to 0.
+            let earDecimal = 0;
+            if (activeInputId) {
+                const calculatedEar = calculateEffectiveAnnualRate(activeInputId);
+                if (calculatedEar !== null) {
+                    earDecimal = calculatedEar;
+                }
+            }
+
+            if (isNaN(principal) || principal < 0 || isNaN(timeValue) || timeValue < 0) {
+                futureValueSpan.textContent = "Invalid Input";
+                return;
+            }
+
+            // Convert time to years
+            let timeInYears;
+            switch (timeUnit) {
+                case 'days':
+                    timeInYears = timeValue / 365;
+                    break;
+                case 'months':
+                    timeInYears = timeValue / 12;
+                    break;
+                case 'years':
+                default:
+                    timeInYears = timeValue;
+                    break;
+            }
+
+            // Formula: FV = PV * (1 + EAR)^t
+            const futureValue = principal * Math.pow(1 + earDecimal, timeInYears);
+
+            futureValueSpan.textContent = '$' + futureValue.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // Set initial default values and run calculation once
+        document.getElementById('principalAmount').value = 1000;
+        document.getElementById('timeValue').value = 1;
+        document.getElementById('timeUnitYears').checked = true;
+
+        // Initialize with a default rate (e.g., 5% Annual EAR)
+        const initialRateId = 'nominal_Annual';
+        document.getElementById(initialRateId).value = 5;
+        activeInputId = initialRateId;
+        updateAllRates(initialRateId); 
     </script>
 </body>
 
