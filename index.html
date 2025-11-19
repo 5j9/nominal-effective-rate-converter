@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Universal Interest Rate Converter (Concise)</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
     <style>
         /* BASE STYLES & TAILWIND EMULATION */
         *,
@@ -379,7 +381,7 @@
             const m = MAPPING[period]; // Compounding periods per year
 
             if (type === 'effective_period') {
-                // The input is the Effective Rate for the compounding period (e.g., Monthly Rate).
+                // The input is the Effective Rate for the compounding period (r_period).
                 // EAR = (1 + r_period)^m - 1
                 return Math.pow(1 + rate, m) - 1;
             } else { // type === 'nominal' (Stated Annual Rate for Period m)
